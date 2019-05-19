@@ -18,8 +18,15 @@ class ArticleController extends AbstractController
     {
         return $this->render('article/homepage.html.twig');
     }
+
     /**
      * @Route("/news/{slug}", name="article_show")
+     * @param string $slug
+     * @param Environment $twigEvironment
+     * @return Response $html
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function show($slug, Environment $twigEvironment)
     {
