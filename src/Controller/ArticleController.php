@@ -6,6 +6,7 @@ use Michelf\MarkdownInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
@@ -29,7 +30,7 @@ class ArticleController extends AbstractController
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function show($slug, Environment $twigEvironment, MarkdownInterface $markdown)
+    public function show($slug, Environment $twigEvironment, MarkdownInterface $markdown, AdapterInterface $cache)
     {
         $comments = [
             'I ate a normal rock once. It did NOT taste like bacon!',
@@ -61,6 +62,15 @@ cow est ribeye adipisicing. Pig hamburger pork belly enim. Do porchetta minim ca
 fugiat.
 EOF;
 
+        //dump($markdown);die;
+
+        $item = $cache->getItem('markdown_'.md5($articleContent));
+        if (!$item->isHit()) {
+            $item->set($markdown->transform($articleContent));
+            $cache->save($item);
+        }
+        $articleContent = $item->get();
+
         $articleContent = $markdown->transform($articleContent);
 
         $html = $twigEvironment->render('article/show.html.twig', array(
@@ -72,8 +82,9 @@ EOF;
 
         return new Response($html);
     }
+
     /**
-     * @Route("news/{slug}/heart", name="article_toggle_heart", methods={"POST"})
+     * @Route("news/{slug}/heart", name="article_toggle_heart", methods={"POST","GET"})
      */
     public function toggleArticleHeart($slug, LoggerInterface $logger){
 
