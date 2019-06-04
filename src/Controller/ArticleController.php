@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
-use Michelf\MarkdownInterface;
+use App\Service\MarkdownHelper;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
@@ -30,7 +29,7 @@ class ArticleController extends AbstractController
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function show($slug, Environment $twigEvironment, MarkdownInterface $markdown, AdapterInterface $cache)
+    public function show($slug, MarkdownHelper $markdownHelper, Environment $twigEvironment)
     {
         $comments = [
             'I ate a normal rock once. It did NOT taste like bacon!',
@@ -44,12 +43,12 @@ class ArticleController extends AbstractController
         ));*/
 
         $articleContent = <<<EOF
-Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
+Spicy asdasdasd **jalapeno bacon** a ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
 lorem proident [beef ribs](https://baconipsum.com/) aute enim veniam ut cillum pork chuck picanha. Dolore reprehenderit
 labore minim pork belly spare ribs cupim short loin in. Elit exercitation eiusmod dolore cow
 turkey shank eu pork belly meatball non cupim.
 
-Laboris beef ribs fatback fugiat eiusmod jowl kielbasa alcatra dolore velit ea ball tip. Pariatur
+Laboris s beef ribs fatback fugiat eiusmod jowl kielbasa alcatra dolore velit ea ball tip. Pariatur
 laboris sunt venison, et laborum dolore minim non meatball. Shankle eu flank aliqua shoulder,
 capicola biltong frankfurter boudin cupim officia. Exercitation fugiat consectetur ham. Adipisicing
 picanha shank et filet mignon pork belly ut ullamco. Irure velit turducken ground round doner incididunt
@@ -64,12 +63,14 @@ EOF;
 
         //dump($cache);die;
 
-        $item = $cache->getItem('markdown_'.md5($articleContent));
+        /*$item = $cache->getItem('markdown_'.md5($articleContent));
         if (!$item->isHit()) {
             $item->set($markdown->transform($articleContent));
             $cache->save($item);
         }
-        $articleContent = $item->get();
+        $articleContent = $item->get();*/
+
+        $articleContent = $markdownHelper->parse($articleContent);
 
         $html = $twigEvironment->render('article/show.html.twig', array(
             'title' => ucwords(str_replace('-', ' ', $slug)),
