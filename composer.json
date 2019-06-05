@@ -9,7 +9,6 @@
         "sensio/framework-extra-bundle": "^5.3",
         "symfony/asset": "4.2.*",
         "symfony/console": "4.2.*",
-        "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
         "symfony/twig-bundle": "4.2.*",
@@ -64,6 +63,7 @@
     "require-dev": {
         "sensiolabs/security-checker": "^5.0",
         "symfony/debug-pack": "^1.0",
+        "symfony/dotenv": "4.2.*",
         "symfony/profiler-pack": "^1.0",
         "symfony/web-server-bundle": "4.2.*"
     }
